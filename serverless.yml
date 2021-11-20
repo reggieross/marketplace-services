@@ -1,0 +1,56 @@
+service: marketplace
+
+plugins:
+  - serverless-pseudo-parameters
+  - serverless-cloudformation-sub-variables
+  - serverless-s3-sync
+  - serverless-build-client
+  - serverless-plugin-ifelse
+
+custom:
+  siteName: ${self:service}-app-ui-${opt:stage}
+  s3Sync:
+    - bucketName: ${self:custom.siteName}
+      localDir: ui/build
+  buildClient:
+    packager: npm
+    command: run build
+    verbose: true
+  serverlessIfElse:
+    - ExcludeIf:
+        functions.catalog-gql: '!${env:BUILD_CATALOG_GQL, false}'
+
+package:
+  individually: true
+
+functions:
+  catalog-gql:
+    handler: ./catalog-gql/build/lambda.handler
+    memorySize: 4096
+    environment:
+      ENVIRONMENT: ${self:provider.stage}
+      POSTGRES_DATABASE_PW: ""
+      POSTGRES_DATABASE_HOST: ""
+      AUTHENTICATION_HOST: ""
+    package:
+      artifact: catalog-gql/artifacts/catalog-gql.zip
+    events:
+      - http:
+          method: any
+          path: /{any+}
+
+provider:
+  name: aws
+  region: us-east-2
+  stage: ${opt:stage, 'dev'}
+  environment:
+    REGION: ${self:provider.region}
+    ENVIRONMENT: ${self:provider.stage}
+    STAGE: ${self:provider.stage}
+  stackTags:
+    Environment: ${self:provider.stage}
+    Project: marketplace
+    ServiceName: ${self:service}
+
+resources:
+#  - ${file(./cf/rds.yml)}

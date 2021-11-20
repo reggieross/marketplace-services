@@ -1,0 +1,28 @@
+{
+  "name": "marketplace",
+  "version": "1.0.0",
+  "description": "API to support the Marketplace app",
+  "main": "index.js",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/reggieross/marketplace.git"
+  },
+  "author": "Reginald Ross",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/reggieross/marketplace/bff"
+  },
+  "scripts": {
+    "build": "tsc",
+    "start": "node --max_old_space_size=128 ./build/index.js"
+  },
+  "homepage": "https://github.com/reggieross/marketplace-gateway#readme",
+  "devDependencies": {
+    "serverless": "^2.59.0",
+    "serverless-build-client": "^2.5.0",
+    "serverless-cloudformation-sub-variables": "^0.2.1",
+    "serverless-plugin-ifelse": "^1.0.7",
+    "serverless-pseudo-parameters": "^2.6.1",
+    "serverless-s3-sync": "^1.17.1"
+  }
+}

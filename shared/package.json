@@ -1,0 +1,77 @@
+{
+  "name": "marketplace-shared",
+  "version": "0.1.0",
+  "private": true,
+  "dependencies": {
+    "typescript": "3.5.3"
+  },
+  "scripts": {
+    "beautify": "prettier --fix ./src/**/*.ts && eslint --fix ./src/**/*.ts"
+  },
+  "eslintConfig": {
+    "root": true,
+    "ignorePatterns": [
+      "src/generated/*.ts"
+    ],
+    "parser": "@typescript-eslint/parser",
+    "plugins": [
+      "@typescript-eslint"
+    ],
+    "extends": [
+      "eslint:recommended",
+      "plugin:@typescript-eslint/eslint-recommended",
+      "plugin:@typescript-eslint/recommended"
+    ],
+    "rules": {
+      "quotes": [
+        "error",
+        "single"
+      ],
+      "no-debugger": [
+        "error"
+      ],
+      "no-alert": "error",
+      "no-empty": "error",
+      "sort-imports": [
+        "error",
+        {
+          "ignoreCase": false,
+          "ignoreMemberSort": false,
+          "memberSyntaxSortOrder": [
+            "none",
+            "all",
+            "multiple",
+            "single"
+          ]
+        }
+      ],
+      "complexity": [
+        "error",
+        4
+      ],
+      "no-empty-function": "error",
+      "no-magic-numbers": "error",
+      "camelcase": "error",
+      "arrow-spacing": [
+        "error",
+        {
+          "before": true,
+          "after": true
+        }
+      ]
+    }
+  },
+  "prettier": {
+    "trailingComma": "es5",
+    "tabWidth": 2,
+    "semi": true,
+    "singleQuote": true,
+    "bracketSpacing": true,
+    "arrowParens": "always"
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "npm run beautify"
+    }
+  }
+}
