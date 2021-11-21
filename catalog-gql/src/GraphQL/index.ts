@@ -1,4 +1,5 @@
-import { ApolloServer, gql } from 'apollo-server-lambda';
+import { ApolloServer } from 'apollo-server-express';
+import { ApolloServer as ApolloServerLambda, gql } from 'apollo-server-lambda';
 
 import { resolvers } from './resolvers';
 import { context } from './context';
@@ -26,9 +27,13 @@ let federatedSchema = buildSubgraphSchema([
  * error for now we are just going to ignore the error
  */
 
-//@ts-ignore
-export const server = new ApolloServer({
+const serverConfig = {
   schema: federatedSchema,
   context,
   introspection: true,
-});
+};
+
+//@ts-ignore
+export const server = new ApolloServer(serverConfig);
+//@ts-ignore
+export const lambdaServer = new ApolloServerLambda(serverConfig);
