@@ -17,6 +17,7 @@ export class CatalogService {
   }
 
   getProductsForUser = (where: ProductsInput): Promise<Product[]> => {
+    console.info(where);
     return this.productRepo.getProductsForUser(where);
   };
 

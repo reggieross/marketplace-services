@@ -13,8 +13,8 @@
     "url": "https://github.com/reggieross/marketplace/bff"
   },
   "scripts": {
-    "build": "tsc",
-    "start": "node --max_old_space_size=128 ./build/index.js"
+    "start": "node --max_old_space_size=128 ./build/index.js",
+    "migrate": "./ci/run_migrations.sh"
   },
   "homepage": "https://github.com/reggieross/marketplace-gateway#readme",
   "devDependencies": {
@@ -24,5 +24,9 @@
     "serverless-plugin-ifelse": "^1.0.7",
     "serverless-pseudo-parameters": "^2.6.1",
     "serverless-s3-sync": "^1.17.1"
+  },
+  "dependencies": {
+    "knex": "^0.95.14",
+    "pg": "^8.7.1"
   }
 }

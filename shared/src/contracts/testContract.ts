@@ -1,4 +1,4 @@
-interface Test_contract {
+interface TestContract {
     hello: string
     world: string
 }

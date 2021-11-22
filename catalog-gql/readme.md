@@ -21,7 +21,7 @@ federation of GQL services so it should only be accessible by the gateway.
     the correct info. If any id's are used ensure they are scoped to the test in question. We don't want to create data
     that is dependent between tests to ensure they don't become flakey
 - Unit Tests
-    - This tests follow the naming convention `name.spec.ts`. These tests are scoped to a function or two. Any dependencies
+    - knexfile.jsThis tests follow the naming convention `name.spec.ts`. These tests are scoped to a function or two. Any dependencies
     that the function in question is using should be mocked and needed. 
 - Gateway Smoke Test
     - We want to ensure that this file didn't introduce any new breaking schema changes. We have a shell script that pulls

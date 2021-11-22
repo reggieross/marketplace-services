@@ -7,9 +7,7 @@
     "generate": "gql-gen",
     "build": "tsc && npm run generate",
     "start": "node ./build/index.js",
-    "test:integration": "npm run migrate:local && jest --config=jest.integration.config.json --passWithNoTests --forceExit --ci",
-    "test:unit": "jest --config=jest.unit.config.json --passWithNoTests --forceExit --ci --coverage",
-    "migrate:local": "knex migrate:latest --knexfile ./knexfile_local.js --env development && npx knex seed:run --env development --knexfile ./knexfile_local.js "
+    "test:unit": "jest --config=jest.unit.config.json --passWithNoTests --forceExit --ci --coverage"
   },
   "keywords": [],
   "author": "",
@@ -32,7 +30,6 @@
     "@graphql-codegen/typescript-operations": "^2.2.1",
     "@graphql-tools/schema": "^8.2.0",
     "@graphql-tools/utils": "^8.2.3",
-    "@rross_llc/api-service-pack": "^0.2.5",
     "@types/graphql": "^14.5.0",
     "apollo-server": "^3.3.0",
     "apollo-server-core": "^3.3.0",
@@ -50,7 +47,6 @@
     "graphql": "^15.6.0",
     "husky": "^4.2.3",
     "jest": "^27.0.6",
-    "knex": "^0.20.11",
     "lodash": "^4.17.21",
     "pg-promise": "^8.7.5",
     "ts-jest": "^25.2.1"

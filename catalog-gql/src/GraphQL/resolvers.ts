@@ -23,8 +23,7 @@ export const resolvers: Resolvers<Context> = {
       return { brand };
     },
     products: async (prev, { input }, ctx) => {
-      const products = await ctx.catalogService.getProductsForUser(input);
-      return products;
+      return ctx.catalogService.getProductsForUser(input);
     },
   },
   Product: {

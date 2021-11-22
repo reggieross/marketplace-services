@@ -37,9 +37,9 @@ COPY --from=build /app/build ./build
 COPY --from=build /app/src ./src
 COPY --from=build /app/schema.graphql ./
 COPY scripts ./scripts
-COPY migrations_local ./migrations_local
-COPY seeds_local ./seeds_local
-COPY knexfile_local.js ./
+COPY ../migrations ./migrations_local
+COPY seeds ./seeds_local
+COPY knexfile.js ./
 COPY jest.integration.config.json ./
 COPY jest.unit.config.json ./
 COPY schema.graphql ./

@@ -1,0 +1,15 @@
+version: '3.0'
+services:
+  postgres:
+    image: postgres:11.5
+    environment:
+      POSTGRES_PASSWORD: passw0rd
+      POSTGRES_USER: integration-test-user
+      POSTGRES_DB: catalog
+    ports:
+      - '5432:5432'
+    networks:
+      - catalog-gql-net
+networks:
+  catalog-gql-net:
+    driver: bridge
