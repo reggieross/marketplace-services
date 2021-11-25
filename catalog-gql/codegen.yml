@@ -4,14 +4,14 @@ hooks:
     - prettier --write
 generates:
   ./src/GraphQL/generated/resolvers.ts:
-    schema: './schema.graphql'
+    schema: schema.graphql
     config:
       federation: true
+      mapperTypeSuffix: Model
       mappers:
         Product: ../../types#Product
         Brand: ../../types#Brand
         Price: ../../types#Price
-
     plugins:
       - typescript
       - typescript-resolvers

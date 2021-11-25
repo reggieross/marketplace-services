@@ -1,4 +1,4 @@
-import { Table, TableConfig, Tables } from './config/TableConfig';
+import {Table, TableConfig, TableName, Tables} from './config/TableConfig';
 import { createWhere } from './CreateWhereClause';
 import { createSelect } from './CreateSelectClause';
 import {
@@ -10,7 +10,7 @@ import { createPagination } from './CreatePaginationClause';
 export type TFilters = ProductFiltersInput | { productIds: string[] };
 
 const genSQL = async (
-  table: keyof TableConfig,
+  table: TableName,
   properties: string[],
   filters: TFilters = {},
   paginationInfo?: PaginationInput

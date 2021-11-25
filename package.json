@@ -14,7 +14,8 @@
   },
   "scripts": {
     "start": "node --max_old_space_size=128 ./build/index.js",
-    "migrate": "./ci/run_migrations.sh"
+    "migrate": "ci/migrate.sh",
+    "seed": "ci/seed.sh"
   },
   "homepage": "https://github.com/reggieross/marketplace-gateway#readme",
   "devDependencies": {

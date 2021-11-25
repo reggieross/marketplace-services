@@ -1,15 +1,15 @@
-export interface Product {
+export type Product = {
   id: string
   name: string
   brandId?: string
 }
 
-export interface Brand {
+export type Brand = {
   id: string
   name: string
 }
 
-export interface Price {
+export type Price = {
   amount: string;
   url: string;
   site: string;

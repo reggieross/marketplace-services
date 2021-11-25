@@ -1,5 +1,9 @@
 import { GraphQLResolveInfo } from 'graphql';
-import { Product, Brand, Price } from '../../types';
+import {
+  Product as ProductModel,
+  Brand as BrandModel,
+  Price as PriceModel,
+} from '../../types';
 export type Maybe<T> = T | null;
 export type InputMaybe<T> = Maybe<T>;
 export type Exact<T extends { [key: string]: unknown }> = {
@@ -25,11 +29,27 @@ export type Scalars = {
   _FieldSet: any;
 };
 
-export type Brand = {
-  __typename?: 'Brand';
-  id?: Maybe<Scalars['String']>;
-  name?: Maybe<Scalars['String']>;
-  product: Array<Product>;
+export enum Role {
+  Admin = 'ADMIN',
+  User = 'USER',
+  Service = 'SERVICE',
+  Unknown = 'UNKNOWN',
+}
+
+export enum Limit {
+  Fifty = 'FIFTY',
+  OneHundred = 'ONE_HUNDRED',
+  FiveHundred = 'FIVE_HUNDRED',
+}
+
+export type Query = {
+  __typename?: 'Query';
+  catalog: ProductResponse;
+};
+
+export type Mutation = {
+  __typename?: 'Mutation';
+  catalog: CatalogMutationResponse;
 };
 
 export type CatalogMutationResponse = {
@@ -39,58 +59,6 @@ export type CatalogMutationResponse = {
 
 export type CatalogMutationResponseLikeProductArgs = {
   input?: InputMaybe<LikeProductInput>;
-};
-
-export enum Limit {
-  Fifty = 'FIFTY',
-  OneHundred = 'ONE_HUNDRED',
-  FiveHundred = 'FIVE_HUNDRED',
-}
-
-export type LikeProductInput = {
-  productId: Scalars['String'];
-  liked: Scalars['Boolean'];
-};
-
-export type LikeProductResponse = {
-  __typename?: 'LikeProductResponse';
-  success?: Maybe<Scalars['Boolean']>;
-};
-
-export type Mutation = {
-  __typename?: 'Mutation';
-  catalog: CatalogMutationResponse;
-};
-
-export type PaginationInput = {
-  limit: Limit;
-  page: Scalars['Int'];
-};
-
-export type Price = {
-  __typename?: 'Price';
-  amount?: Maybe<Scalars['String']>;
-  url?: Maybe<Scalars['String']>;
-  site?: Maybe<Scalars['String']>;
-  currency?: Maybe<Scalars['String']>;
-};
-
-export type Product = {
-  __typename?: 'Product';
-  id?: Maybe<Scalars['String']>;
-  name?: Maybe<Scalars['String']>;
-  Brand: Array<Brand>;
-  Price: Array<Price>;
-};
-
-export type ProductFilters = {
-  __typename?: 'ProductFilters';
-  total?: Maybe<Scalars['Int']>;
-  brand: Array<Brand>;
-};
-
-export type ProductFiltersInput = {
-  brandIds?: InputMaybe<Array<Scalars['String']>>;
 };
 
 export type ProductResponse = {
@@ -103,45 +71,67 @@ export type ProductResponseProductsArgs = {
   input?: InputMaybe<ProductsInput>;
 };
 
+export type ProductFilters = {
+  __typename?: 'ProductFilters';
+  total?: Maybe<Scalars['Int']>;
+  brand: Array<Brand>;
+};
+
+export type Product = {
+  __typename?: 'Product';
+  id?: Maybe<Scalars['String']>;
+  name?: Maybe<Scalars['String']>;
+  Brand: Array<Brand>;
+  Price: Array<Price>;
+};
+
+export type Brand = {
+  __typename?: 'Brand';
+  id?: Maybe<Scalars['String']>;
+  name?: Maybe<Scalars['String']>;
+  product: Array<Product>;
+};
+
+export type Price = {
+  __typename?: 'Price';
+  amount?: Maybe<Scalars['String']>;
+  url?: Maybe<Scalars['String']>;
+  site?: Maybe<Scalars['String']>;
+  currency?: Maybe<Scalars['String']>;
+};
+
+export type LikeProductResponse = {
+  __typename?: 'LikeProductResponse';
+  success?: Maybe<Scalars['Boolean']>;
+};
+
 export type ProductsInput = {
   pageInfo?: InputMaybe<PaginationInput>;
   filters?: InputMaybe<ProductFiltersInput>;
 };
 
-export type Query = {
-  __typename?: 'Query';
-  catalog: ProductResponse;
+export type PaginationInput = {
+  limit: Limit;
+  page: Scalars['Int'];
 };
 
-export enum Role {
-  Admin = 'ADMIN',
-  User = 'USER',
-  Service = 'SERVICE',
-  Unknown = 'UNKNOWN',
-}
+export type ProductFiltersInput = {
+  brandIds?: InputMaybe<Array<Scalars['String']>>;
+};
+
+export type LikeProductInput = {
+  productId: Scalars['String'];
+  liked: Scalars['Boolean'];
+};
 
 export type ResolverTypeWrapper<T> = Promise<T> | T;
 
 export type ResolverWithResolve<TResult, TParent, TContext, TArgs> = {
   resolve: ResolverFn<TResult, TParent, TContext, TArgs>;
 };
-
-export type LegacyStitchingResolver<TResult, TParent, TContext, TArgs> = {
-  fragment: string;
-  resolve: ResolverFn<TResult, TParent, TContext, TArgs>;
-};
-
-export type NewStitchingResolver<TResult, TParent, TContext, TArgs> = {
-  selectionSet: string;
-  resolve: ResolverFn<TResult, TParent, TContext, TArgs>;
-};
-export type StitchingResolver<TResult, TParent, TContext, TArgs> =
-  | LegacyStitchingResolver<TResult, TParent, TContext, TArgs>
-  | NewStitchingResolver<TResult, TParent, TContext, TArgs>;
 export type Resolver<TResult, TParent = {}, TContext = {}, TArgs = {}> =
   | ResolverFn<TResult, TParent, TContext, TArgs>
-  | ResolverWithResolve<TResult, TParent, TContext, TArgs>
-  | StitchingResolver<TResult, TParent, TContext, TArgs>;
+  | ResolverWithResolve<TResult, TParent, TContext, TArgs>;
 
 export type ResolverFn<TResult, TParent, TContext, TArgs> = (
   parent: TParent,
@@ -155,7 +145,7 @@ export type SubscriptionSubscribeFn<TResult, TParent, TContext, TArgs> = (
   args: TArgs,
   context: TContext,
   info: GraphQLResolveInfo
-) => AsyncIterator<TResult> | Promise<AsyncIterator<TResult>>;
+) => AsyncIterable<TResult> | Promise<AsyncIterable<TResult>>;
 
 export type SubscriptionResolveFn<TResult, TParent, TContext, TArgs> = (
   parent: TParent,
@@ -241,59 +231,61 @@ export type DirectiveResolverFn<
 
 /** Mapping between all available schema types and the resolvers types */
 export type ResolversTypes = {
-  Brand: ResolverTypeWrapper<Brand>;
-  String: ResolverTypeWrapper<Scalars['String']>;
-  CatalogMutationResponse: ResolverTypeWrapper<CatalogMutationResponse>;
+  Role: Role;
   LIMIT: Limit;
-  LikeProductInput: LikeProductInput;
-  Boolean: ResolverTypeWrapper<Scalars['Boolean']>;
-  LikeProductResponse: ResolverTypeWrapper<LikeProductResponse>;
+  Query: ResolverTypeWrapper<{}>;
   Mutation: ResolverTypeWrapper<{}>;
-  PaginationInput: PaginationInput;
-  Int: ResolverTypeWrapper<Scalars['Int']>;
-  Price: ResolverTypeWrapper<Price>;
-  Product: ResolverTypeWrapper<Product>;
-  ProductFilters: ResolverTypeWrapper<
-    Omit<ProductFilters, 'brand'> & { brand: Array<ResolversTypes['Brand']> }
-  >;
-  ProductFiltersInput: ProductFiltersInput;
+  CatalogMutationResponse: ResolverTypeWrapper<CatalogMutationResponse>;
   ProductResponse: ResolverTypeWrapper<
     Omit<ProductResponse, 'products' | 'filters'> & {
       products: Array<ResolversTypes['Product']>;
       filters: ResolversTypes['ProductFilters'];
     }
   >;
+  ProductFilters: ResolverTypeWrapper<
+    Omit<ProductFilters, 'brand'> & { brand: Array<ResolversTypes['Brand']> }
+  >;
+  Int: ResolverTypeWrapper<Scalars['Int']>;
+  Product: ResolverTypeWrapper<ProductModel>;
+  String: ResolverTypeWrapper<Scalars['String']>;
+  Brand: ResolverTypeWrapper<BrandModel>;
+  Price: ResolverTypeWrapper<PriceModel>;
+  LikeProductResponse: ResolverTypeWrapper<LikeProductResponse>;
+  Boolean: ResolverTypeWrapper<Scalars['Boolean']>;
   ProductsInput: ProductsInput;
-  Query: ResolverTypeWrapper<{}>;
-  Role: Role;
+  PaginationInput: PaginationInput;
+  ProductFiltersInput: ProductFiltersInput;
+  LikeProductInput: LikeProductInput;
 };
 
 /** Mapping between all available schema types and the resolvers parents */
 export type ResolversParentTypes = {
-  Brand: Brand;
-  String: Scalars['String'];
-  CatalogMutationResponse: CatalogMutationResponse;
-  LikeProductInput: LikeProductInput;
-  Boolean: Scalars['Boolean'];
-  LikeProductResponse: LikeProductResponse;
+  Query: {};
   Mutation: {};
-  PaginationInput: PaginationInput;
-  Int: Scalars['Int'];
-  Price: Price;
-  Product: Product;
-  ProductFilters: Omit<ProductFilters, 'brand'> & {
-    brand: Array<ResolversParentTypes['Brand']>;
-  };
-  ProductFiltersInput: ProductFiltersInput;
+  CatalogMutationResponse: CatalogMutationResponse;
   ProductResponse: Omit<ProductResponse, 'products' | 'filters'> & {
     products: Array<ResolversParentTypes['Product']>;
     filters: ResolversParentTypes['ProductFilters'];
   };
+  ProductFilters: Omit<ProductFilters, 'brand'> & {
+    brand: Array<ResolversParentTypes['Brand']>;
+  };
+  Int: Scalars['Int'];
+  Product: ProductModel;
+  String: Scalars['String'];
+  Brand: BrandModel;
+  Price: PriceModel;
+  LikeProductResponse: LikeProductResponse;
+  Boolean: Scalars['Boolean'];
   ProductsInput: ProductsInput;
-  Query: {};
+  PaginationInput: PaginationInput;
+  ProductFiltersInput: ProductFiltersInput;
+  LikeProductInput: LikeProductInput;
 };
 
-export type AuthDirectiveArgs = { requires?: Maybe<Role> };
+export type AuthDirectiveArgs = {
+  requires?: Maybe<Role>;
+};
 
 export type AuthDirectiveResolver<
   Result,
@@ -302,35 +294,15 @@ export type AuthDirectiveResolver<
   Args = AuthDirectiveArgs
 > = DirectiveResolverFn<Result, Parent, ContextType, Args>;
 
-export type BrandResolvers<
+export type QueryResolvers<
   ContextType = any,
-  ParentType extends ResolversParentTypes['Brand'] = ResolversParentTypes['Brand']
+  ParentType extends ResolversParentTypes['Query'] = ResolversParentTypes['Query']
 > = {
-  id?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  name?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  product?: Resolver<Array<ResolversTypes['Product']>, ParentType, ContextType>;
-  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
-};
-
-export type CatalogMutationResponseResolvers<
-  ContextType = any,
-  ParentType extends ResolversParentTypes['CatalogMutationResponse'] = ResolversParentTypes['CatalogMutationResponse']
-> = {
-  likeProduct?: Resolver<
-    Maybe<ResolversTypes['LikeProductResponse']>,
+  catalog?: Resolver<
+    ResolversTypes['ProductResponse'],
     ParentType,
-    ContextType,
-    RequireFields<CatalogMutationResponseLikeProductArgs, never>
+    ContextType
   >;
-  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
-};
-
-export type LikeProductResponseResolvers<
-  ContextType = any,
-  ParentType extends ResolversParentTypes['LikeProductResponse'] = ResolversParentTypes['LikeProductResponse']
-> = {
-  success?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType>;
-  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
 export type MutationResolvers<
@@ -344,34 +316,16 @@ export type MutationResolvers<
   >;
 };
 
-export type PriceResolvers<
+export type CatalogMutationResponseResolvers<
   ContextType = any,
-  ParentType extends ResolversParentTypes['Price'] = ResolversParentTypes['Price']
+  ParentType extends ResolversParentTypes['CatalogMutationResponse'] = ResolversParentTypes['CatalogMutationResponse']
 > = {
-  amount?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  url?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  site?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  currency?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
-};
-
-export type ProductResolvers<
-  ContextType = any,
-  ParentType extends ResolversParentTypes['Product'] = ResolversParentTypes['Product']
-> = {
-  id?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  name?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  Brand?: Resolver<Array<ResolversTypes['Brand']>, ParentType, ContextType>;
-  Price?: Resolver<Array<ResolversTypes['Price']>, ParentType, ContextType>;
-  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
-};
-
-export type ProductFiltersResolvers<
-  ContextType = any,
-  ParentType extends ResolversParentTypes['ProductFilters'] = ResolversParentTypes['ProductFilters']
-> = {
-  total?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
-  brand?: Resolver<Array<ResolversTypes['Brand']>, ParentType, ContextType>;
+  likeProduct?: Resolver<
+    Maybe<ResolversTypes['LikeProductResponse']>,
+    ParentType,
+    ContextType,
+    RequireFields<CatalogMutationResponseLikeProductArgs, never>
+  >;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
@@ -389,41 +343,67 @@ export type ProductResponseResolvers<
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
-export type QueryResolvers<
+export type ProductFiltersResolvers<
   ContextType = any,
-  ParentType extends ResolversParentTypes['Query'] = ResolversParentTypes['Query']
+  ParentType extends ResolversParentTypes['ProductFilters'] = ResolversParentTypes['ProductFilters']
 > = {
-  catalog?: Resolver<
-    ResolversTypes['ProductResponse'],
-    ParentType,
-    ContextType
-  >;
+  total?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
+  brand?: Resolver<Array<ResolversTypes['Brand']>, ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
+export type ProductResolvers<
+  ContextType = any,
+  ParentType extends ResolversParentTypes['Product'] = ResolversParentTypes['Product']
+> = {
+  id?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  name?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  Brand?: Resolver<Array<ResolversTypes['Brand']>, ParentType, ContextType>;
+  Price?: Resolver<Array<ResolversTypes['Price']>, ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
+export type BrandResolvers<
+  ContextType = any,
+  ParentType extends ResolversParentTypes['Brand'] = ResolversParentTypes['Brand']
+> = {
+  id?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  name?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  product?: Resolver<Array<ResolversTypes['Product']>, ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
+export type PriceResolvers<
+  ContextType = any,
+  ParentType extends ResolversParentTypes['Price'] = ResolversParentTypes['Price']
+> = {
+  amount?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  url?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  site?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  currency?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
+export type LikeProductResponseResolvers<
+  ContextType = any,
+  ParentType extends ResolversParentTypes['LikeProductResponse'] = ResolversParentTypes['LikeProductResponse']
+> = {
+  success?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
 export type Resolvers<ContextType = any> = {
-  Brand?: BrandResolvers<ContextType>;
-  CatalogMutationResponse?: CatalogMutationResponseResolvers<ContextType>;
-  LikeProductResponse?: LikeProductResponseResolvers<ContextType>;
-  Mutation?: MutationResolvers<ContextType>;
-  Price?: PriceResolvers<ContextType>;
-  Product?: ProductResolvers<ContextType>;
-  ProductFilters?: ProductFiltersResolvers<ContextType>;
-  ProductResponse?: ProductResponseResolvers<ContextType>;
   Query?: QueryResolvers<ContextType>;
+  Mutation?: MutationResolvers<ContextType>;
+  CatalogMutationResponse?: CatalogMutationResponseResolvers<ContextType>;
+  ProductResponse?: ProductResponseResolvers<ContextType>;
+  ProductFilters?: ProductFiltersResolvers<ContextType>;
+  Product?: ProductResolvers<ContextType>;
+  Brand?: BrandResolvers<ContextType>;
+  Price?: PriceResolvers<ContextType>;
+  LikeProductResponse?: LikeProductResponseResolvers<ContextType>;
 };
 
-/**
- * @deprecated
- * Use "Resolvers" root object instead. If you wish to get "IResolvers", add "typesPrefix: I" to your config.
- */
-export type IResolvers<ContextType = any> = Resolvers<ContextType>;
 export type DirectiveResolvers<ContextType = any> = {
   auth?: AuthDirectiveResolver<any, any, ContextType>;
 };
-
-/**
- * @deprecated
- * Use "DirectiveResolvers" root object instead. If you wish to get "IDirectiveResolvers", add "typesPrefix: I" to your config.
- */
-export type IDirectiveResolvers<ContextType = any> =
-  DirectiveResolvers<ContextType>;

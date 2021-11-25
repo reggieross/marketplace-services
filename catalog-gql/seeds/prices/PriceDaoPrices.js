@@ -1,6 +1,8 @@
 module.exports = [
   {
-    name: "Some name 1"
+    amount: "10.99",
+    currency: "usd",
+    currency: "usd",
   },
   {
     name: "Some name 2"

@@ -6,6 +6,6 @@
   "testMatch": ["**/?(*.)+(ispec|itest).[jt]s?(x)"],
   "testPathIgnorePatterns": ["/node_modules/"],
   "collectCoverageFrom": [
-    "src/Service/repository/dao/**",
+    "src/Service/repository/dao/**"
   ]
 }

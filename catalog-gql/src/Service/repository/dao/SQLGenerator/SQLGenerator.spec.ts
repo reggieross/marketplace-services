@@ -1,9 +1,10 @@
-import { SQLGenerator } from './SQLGenerator';
-import { Limit } from '../../../../GraphQL/generated/resolvers';
+import {SQLGenerator} from './SQLGenerator';
+import {Limit} from '../../../../GraphQL/generated/resolvers';
+import {TableName} from "./config/TableConfig";
 
 describe('SQL Generator', () => {
   it('generate basic select statement for table', async () => {
-    const { query, queryInput } = await SQLGenerator.genSQL('product', [
+    const { query, queryInput } = await SQLGenerator.genSQL(TableName.PRODUCT, [
       'name',
     ]);
     expect(query).toEqual(
@@ -14,7 +15,7 @@ describe('SQL Generator', () => {
 
   it('generate where clause if filters are provided', async () => {
     const { query, queryInput } = await SQLGenerator.genSQL(
-      'product',
+      TableName.PRODUCT,
       ['name'],
       {
         brandIds: ['some-brand'],
@@ -28,7 +29,7 @@ describe('SQL Generator', () => {
 
   it('should generate where and correct page for filters', async () => {
     const { query, queryInput } = await SQLGenerator.genSQL(
-      'product',
+        TableName.PRODUCT,
       ['name'],
       {
         brandIds: ['some-brand'],

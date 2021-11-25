@@ -1,6 +1,7 @@
-import { getDB } from './db';
+import {getDB} from './db';
 import {Brand, Dao, Product} from '../../../types';
-import { SQLGenerator } from './SQLGenerator/SQLGenerator';
+import {SQLGenerator} from './SQLGenerator/SQLGenerator';
+import {TableName} from "./SQLGenerator/config/TableConfig";
 
 interface BrandEntity {
   id: string;
@@ -9,7 +10,7 @@ interface BrandEntity {
 
 const list = async (where: {}): Promise<Product[]> => {
   const { query, queryInput } = await SQLGenerator.genSQL(
-    'brand',
+    TableName.BRAND,
     ['id', 'name'],
   );
   const rows: BrandEntity[] = await getDB().any(query, queryInput);

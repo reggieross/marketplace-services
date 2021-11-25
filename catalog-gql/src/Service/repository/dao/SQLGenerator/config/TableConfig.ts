@@ -1,16 +1,19 @@
+export enum TableName {
+  PRODUCT = 'product',
+  BRAND = 'brand',
+  PRICE = 'price',
+}
+
+
 export interface Table {
   name: string;
   propertyMapping: Record<string, string>;
 }
 
-export type TableConfig = {
-  product: Table;
-  brand: Table;
-  price: Table;
-};
+export type TableConfig = Record<TableName, Table>
 
 export const Tables: TableConfig = {
-  product: {
+  [TableName.PRODUCT]: {
     name: 'product',
     propertyMapping: {
       id: 'id',
@@ -18,14 +21,14 @@ export const Tables: TableConfig = {
       name: 'name',
     },
   },
-  brand: {
+  [TableName.BRAND]: {
     name: 'brand',
     propertyMapping: {
       id: 'id',
       name: 'name',
     },
   },
-  price: {
+  [TableName.PRICE]: {
     name: 'price',
     propertyMapping: {
       id: 'id',

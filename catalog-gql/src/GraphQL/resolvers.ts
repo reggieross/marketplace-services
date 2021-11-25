@@ -4,12 +4,11 @@ import {
   ProductResponse,
   Resolvers,
 } from './generated/resolvers';
-import { AuthenticationService } from '@rross_llc/api-service-pack';
 
 export const resolvers: Resolvers<Context> = {
   Query: {
     catalog: async (_, {}, ctx) => {
-      return {} as ProductResponse;
+      return {} as any;
     },
   },
   Mutation: {
@@ -33,18 +32,6 @@ export const resolvers: Resolvers<Context> = {
   },
   CatalogMutationResponse: {
     likeProduct: async (prev, { input }, ctx) => {
-      console.log(ctx.token);
-      const { valid, user } = await AuthenticationService.validateToken(
-        ctx.token,
-        true
-      );
-
-      console.log(`valid: ${valid}`, `user: ${user}`);
-
-      if (!valid || !user) {
-        return { success: false };
-      }
-
       //TODO Add logic to actually like product
       return { success: true };
     },

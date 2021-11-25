@@ -1,6 +1,7 @@
-import { getDB } from './db';
-import { Dao, Price, Product } from '../../../types';
-import { SQLGenerator, TFilters } from './SQLGenerator/SQLGenerator';
+import {getDB} from './db';
+import {Dao, Price} from '../../../types';
+import {SQLGenerator, TFilters} from './SQLGenerator/SQLGenerator';
+import {TableName} from "./SQLGenerator/config/TableConfig";
 
 interface PriceEntity {
   id: string;
@@ -12,7 +13,7 @@ interface PriceEntity {
 
 const list = async (where: { filters: TFilters }): Promise<Price[]> => {
   const { query, queryInput } = await SQLGenerator.genSQL(
-    'price',
+    TableName.PRICE,
     ['id', 'amount', 'currency', 'site', 'product_id'],
     where.filters
   );
