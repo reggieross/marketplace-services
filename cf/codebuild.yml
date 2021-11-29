@@ -65,7 +65,8 @@ Resources:
                   - ec2:DescribeVpcs
                 Resource: '*'
               - Effect: Allow
-                Action: SecretsManager:GetSecretValue
+                Action:
+                  - SecretsManager:GetSecretValue
                 Resource:
                   - !Ref CatalogReplicationClusterMasterSecret
               - Effect: Allow
@@ -114,16 +115,16 @@ Resources:
         EnvironmentVariables:
           - Name: DB_PASSWORD
             Type: SECRETS_MANAGER
-            Value: catalog-replication-cluster-master-password:password
+            Value: catalog-replication-cluster-master-password-${self:provider.stage}:password
           - Name: DB_USERNAME
             Type: SECRETS_MANAGER
-            Value: catalog-replication-cluster-master-password:username
+            Value: catalog-replication-cluster-master-password-${self:provider.stage}:username
           - Name: DB_PORT
             Type: SECRETS_MANAGER
-            Value: catalog-replication-cluster-master-password:port
+            Value: catalog-replication-cluster-master-password-${self:provider.stage}:port
           - Name: DB_HOST
             Type: SECRETS_MANAGER
-            Value: catalog-replication-cluster-master-password:host
+            Value: catalog-replication-cluster-master-password-${self:provider.stage}:host
           - Name: ENVIRONMENT
             Type: PLAINTEXT
             Value: ${self:provider.stage}

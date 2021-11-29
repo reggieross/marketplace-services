@@ -125,13 +125,17 @@ jobs:
       - when:
           condition: << parameters.module >>
           steps:
-            - run: npx serverless deploy --config ./<< parameters.module >>/serverless.yml --stage << parameters.stage >> --aws-profile deployment
+            - run:
+                command: npx serverless deploy --config ./<< parameters.module >>/serverless.yml --stage << parameters.stage >> --aws-profile deployment
+                no_output_timeout: 60m
 
       - when:
           condition:
             not: << parameters.module >>
           steps:
-            - run: npx serverless deploy --stage << parameters.stage >> --aws-profile deployment
+            - run:
+                command: npx serverless deploy --stage << parameters.stage >> --aws-profile deployment
+                no_output_timeout: 60m
 
   post_deploy:
     executor: aws-cli/default
@@ -259,4 +263,40 @@ workflows:
                 - release/*
           requires:
             - "Build: Catalog GQL"
+            - "Deploy: Shared - qa"
+
+      #Post Deploy
+      - post_deploy:
+          stage: dev
+          name: "Post Deploy: dev"
+          context: org_ui
+          filters:
+            branches:
+              only:
+                - develop
+          requires:
+            - "Deploy: Catalog GQL - dev"
+            - "Deploy: Shared - dev"
+      - post_deploy:
+          stage: prod
+          name: "Post Deploy: prod"
+          context: org_ui
+          filters:
+            branches:
+              only:
+                - master
+          requires:
+            - "Deploy: Catalog GQL - prod"
+            - "Deploy: Shared - prod"
+      - post_deploy:
+          stage: qa
+          name: "Post Deploy: qa"
+          module: catalog-gql
+          context: org_ui
+          filters:
+            branches:
+              only:
+                - release/*
+          requires:
+            - "Deploy: Catalog GQL - qa"
             - "Deploy: Shared - qa"

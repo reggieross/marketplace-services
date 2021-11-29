@@ -27,6 +27,7 @@
   },
   "dependencies": {
     "knex": "^0.95.14",
-    "pg": "^8.7.1"
+    "pg": "^8.7.1",
+    "serverless-plugin-ifelse": "^1.0.7"
   }
 }
