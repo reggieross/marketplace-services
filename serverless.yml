@@ -27,6 +27,8 @@ custom:
     qa: ''
     prod: ''
   catalog-replication-instance-size: ${self:custom.catalog-replication-instance-size-config.${self:provider.stage}}
+  gitbub-secrets: ${ssm:/aws/reference/secretsmanager/github-secrets~true}
+  github-access-token: ${self:custom.gitbub-secrets.deployment_token}
   pg-engine-version: 13.3
   codebuild:
     url: https://github.com/reggieross/marketplace-services.git

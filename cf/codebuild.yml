@@ -25,7 +25,7 @@ Resources:
             Action:
               - 'sts:AssumeRole'
       Policies:
-        - PolicyName: 'AO-MigrationPipeline-CodeBuild-ServiceRole-Policy'
+        - PolicyName: 'MarketplaceService-MigrationPipeline-CodeBuild-ServiceRole-Policy'
           PolicyDocument:
             Version: '2012-10-17'
             Statement:
@@ -66,16 +66,8 @@ Resources:
                 Resource: '*'
               - Effect: Allow
                 Action: SecretsManager:GetSecretValue
-                Resource: ${self:custom.db-secret-arn}
-              - Effect: Allow
-                Action:
-                  - kms:Decrypt
-                  - kms:DescribeKey
-                  - kms:Encrypt
-                  - kms:GenerateDataKey*
-                  - kms:ReEncrypt*
                 Resource:
-                  - ${self:provider.application-cluster-kms-key-arn}
+                  - !Ref CatalogReplicationClusterMasterSecret
               - Effect: Allow
                 Action:
                   - ssm:GetParameters
@@ -101,6 +93,12 @@ Resources:
       Tags:
         - Key: ServiceName
           Value: ${self:service}
+  MigrationPipelineSourceCredential:
+    Type: 'AWS::CodeBuild::SourceCredential'
+    Properties:
+      Token: ${self:custom.github-access-token}
+      ServerType: GITHUB
+      AuthType: PERSONAL_ACCESS_TOKEN
   MigrationPipeline:
     Type: AWS::CodeBuild::Project
     Properties:
@@ -110,6 +108,7 @@ Resources:
       Description: Marketplace services migration pipeline
       Environment:
         ComputeType: BUILD_GENERAL1_SMALL
+        Image: node:12.18.3
         ImagePullCredentialsType: SERVICE_ROLE
         Type: LINUX_CONTAINER
         EnvironmentVariables:
@@ -128,20 +127,21 @@ Resources:
           - Name: ENVIRONMENT
             Type: PLAINTEXT
             Value: ${self:provider.stage}
-      Name: marketplace-services-migration-pipeline
+      Name: marketplace-services-migration-pipeline-${self:provider.stage}
       Source:
         Auth:
           Type: OAUTH
         GitCloneDepth: 1
-        Location: ${self:provider.codebuild.url}
+        Location: ${self:custom.codebuild.url}
         Type: GITHUB
       ServiceRole:
         Fn::GetAtt: ['MigrationServiceRole', 'Arn']
       VpcConfig:
         SecurityGroupIds:
-          - Ref: ReplicationDBAccessSecurityGroup
+          - Ref: CatalogReplicationDBAccessSecurityGroup
           - Ref: CodebuildInternetAccessSG
         Subnets:
           - ${self:custom.private-subnet-1}
           - ${self:custom.private-subnet-2}
         VpcId: ${self:custom.vpc-id}
+    DependsOn: MigrationPipelineSourceCredential

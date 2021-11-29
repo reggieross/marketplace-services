@@ -119,7 +119,7 @@ Resources:
   CatalogReplicationClusterMasterSecret:
     Type: AWS::SecretsManager::Secret
     Properties:
-      Name: catalog-replication-cluster-master-password
+      Name: catalog-replication-cluster-master-password-${self:provider.stage}
       Description: Catalog replication cluster master user secret
       GenerateSecretString:
         SecretStringTemplate:
@@ -148,6 +148,6 @@ Outputs:
       Name: '#{AWS::StackName}-CatalogReplicationClusterMasterSecretArn'
   CatalogReplicationClusterSecretName:
     Description: Catalog replication cluster secret name
-    Value: 'catalog-replication-cluster-master-password'
+    Value: catalog-replication-cluster-master-password-${self:provider.stage}
     Export:
       Name: '#{AWS::StackName}-CatalogReplicationClusterSecretName'

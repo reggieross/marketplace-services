@@ -72,7 +72,7 @@ jobs:
             - ./<< parameters.module >>/serverless.yml
             - ./<< parameters.module >>/cf
 
-  unit-test:
+  unit_test:
     parameters:
       module:
         type: string
@@ -86,7 +86,7 @@ jobs:
       - run: cat ~/repo/ci/new-env-vars >> $BASH_ENV
       - run: $SCRIPT_ROOT
 
-  integration-test:
+  integration_test:
     parameters:
       module:
         type: string
@@ -133,7 +133,7 @@ jobs:
           steps:
             - run: npx serverless deploy --stage << parameters.stage >> --aws-profile deployment
 
-  post-deploy:
+  post_deploy:
     executor: aws-cli/default
     parameters:
       stage:
@@ -155,9 +155,9 @@ jobs:
       - run: aws configure set region $AWS_DEFAULT_REGION --profile deployment
       - run: aws configure set profile.deployment.role_arn "$AWS_DEPLOYMENT_ARN"
       - run: aws configure set profile.deployment.source_profile default
-      - run: aws configure set profile.deployment.source_profile default
-      - ./ci/run_codebuild_pipeline.sh marketplace-services-migration-pipeline << pipeline.git.revision >>
+      - run: ./ci/run_codebuild_pipeline.sh marketplace-services-migration-pipeline-<< parameters.stage >> << pipeline.git.revision >>
 
+workflows:
   version: 2
   build_test_deploy:
     jobs:
@@ -169,12 +169,12 @@ jobs:
           module: catalog-gql
           requires:
             - check_changes
-      - unit-test:
+      - unit_test:
           name: "Test: Catalog GQL UNIT"
           module: catalog-gql
           requires:
             -  "Install: Catalog GQL"
-      - integration-test:
+      - integration_test:
           name: "Test: Catalog GQL Integration"
           module: catalog-gql
           requires:
@@ -235,6 +235,7 @@ jobs:
                 - develop
           requires:
             - "Build: Catalog GQL"
+            - "Deploy: Shared - dev"
       - deploy:
           stage: prod
           name: "Deploy: Catalog GQL - prod"
@@ -246,6 +247,7 @@ jobs:
                 - master
           requires:
             - "Build: Catalog GQL"
+            - "Deploy: Shared - prod"
       - deploy:
           stage: qa
           name: "Deploy: Catalog GQL - qa"
@@ -257,3 +259,4 @@ jobs:
                 - release/*
           requires:
             - "Build: Catalog GQL"
+            - "Deploy: Shared - qa"
