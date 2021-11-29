@@ -5,6 +5,7 @@ plugins:
   - serverless-cloudformation-sub-variables
   - serverless-prune-plugin
   - serverless-offline-conditional-resources
+  - serverless-plugin-ifelse
 
 
 custom:
@@ -24,6 +25,9 @@ custom:
   db-access-security-grooup: ${cf:${self:custom.shared-infra}.ReplicationDBAccessSecurityGroup}
   db-secret-name: ${cf:${self:custom.shared-infra}.CatalogReplicationClusterSecretName}
   db-secrets: ${ssm:/aws/reference/secretsmanager/${self:custom.db-secret-name}~true}
+  serverlessIfElse:
+    - ExcludeIf:
+        functions.catalog-gql: '!${env:BUILD_CATALOG_GQL, false}'
 
 package:
   individually: true

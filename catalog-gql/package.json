@@ -28,7 +28,8 @@
     "serverless-cloudformation-sub-variables": "^0.2.1",
     "serverless-prune-plugin": "^1.6.1",
     "serverless-pseudo-parameters": "^2.6.1",
-    "serverless-offline-conditional-resources": "0.0.3"
+    "serverless-offline-conditional-resources": "0.0.3",
+    "serverless-plugin-ifelse": "^1.0.7"
   },
   "dependencies": {
     "@apollo/federation": "^0.32.0",
