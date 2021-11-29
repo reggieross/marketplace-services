@@ -1,0 +1,59 @@
+Resources:
+  CatalogReplicationDBAccessSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: Replicate SG Connect to RDS instance
+      GroupName: CatalogReplicationDBAccessSecurityGroup
+      VpcId: ${self:custom.vpc-id}
+      SecurityGroupEgress:
+        - IpProtocol: tcp
+          FromPort: 3306
+          ToPort: 3306
+          CidrIp: 0.0.0.0/0
+        - IpProtocol: tcp
+          FromPort: 5432
+          ToPort: 5432
+          CidrIp: 0.0.0.0/0
+  CatalogReplicationDBSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: Replicate Server to Connect to RDS instance
+      GroupName: CatalogReplicationDBSecurityGroup
+      SecurityGroupIngress:
+        # Incoming traffic from Replicate Security Group
+        - IpProtocol: tcp
+          FromPort: 3306
+          ToPort: 3306
+          SourceSecurityGroupId:
+            Ref: CatalogReplicationDBAccessSecurityGroup
+        - IpProtocol: tcp
+          FromPort: 5432
+          ToPort: 5432
+          SourceSecurityGroupId:
+            Ref: CatalogReplicationDBAccessSecurityGroup
+      SecurityGroupEgress:
+        - IpProtocol: -1
+          FromPort: -1
+          ToPort: -1
+          CidrIp: 0.0.0.0/0
+      VpcId: ${self:custom.vpc-id}
+  ReplicationClusterSecurityGroupIngress:
+    Type: 'AWS::EC2::SecurityGroupIngress'
+    Properties:
+      GroupId: !GetAtt 'CatalogReplicationDBSecurityGroup.GroupId'
+      IpProtocol: -1
+      SourceSecurityGroupId: !Ref CatalogReplicationDBSecurityGroup
+      Description: 'Self Reference'
+
+
+Outputs:
+  CatalogReplicationDBSecurityGroup:
+    Description: Security group for catalog replication cluster
+    Value: !Ref CatalogReplicationDBSecurityGroup
+    Export:
+      Name: '#{AWS::StackName}-CatalogReplicationDBSecurityGroup'
+  ReplicationDBAccessSecurityGroup:
+    Description: Security group for the application that needs access to the catalog replication cluster
+    Value: !Ref CatalogReplicationDBAccessSecurityGroup
+    Export:
+      Name: '#{AWS::StackName}-CatalogReplicationDBAccessSecurityGroup'

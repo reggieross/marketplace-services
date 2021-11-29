@@ -1,0 +1,18 @@
+overwrite: true
+hooks:
+  afterAllFileWrite:
+    - prettier --write
+generates:
+  ./src/GraphQL/generated/resolvers.ts:
+    schema: schema.graphql
+    config:
+      federation: true
+      mapperTypeSuffix: Model
+      mappers:
+        Product: ../../types#Product
+        Brand: ../../types#Brand
+        Price: ../../types#Price
+    plugins:
+      - typescript
+      - typescript-resolvers
+      - typescript-operations

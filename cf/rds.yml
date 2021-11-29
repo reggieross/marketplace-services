@@ -1,0 +1,153 @@
+Resources:
+  CatalogReplicationCluster:
+    Type: 'AWS::RDS::DBCluster'
+    Properties:
+      DBClusterParameterGroupName:
+        Ref: CatalogReplicationClusterParameterGroup
+      DBSubnetGroupName:
+        Ref: CatalogReplicationDBSubnetGroup
+      VpcSecurityGroupIds:
+        - Ref: CatalogReplicationDBSecurityGroup
+      DatabaseName: MarketplaceCatalog
+      Engine: aurora-postgresql
+      EngineMode: provisioned
+      EngineVersion: 13.3
+      StorageEncrypted: true
+      DeletionProtection: true
+      MasterUsername:
+        !Join [
+          '',
+          [
+            '{{resolve:secretsmanager:',
+            !Ref CatalogReplicationClusterMasterSecret,
+            ':SecretString:username}}',
+          ],
+        ]
+      MasterUserPassword:
+        !Join [
+          '',
+          [
+            '{{resolve:secretsmanager:',
+            !Ref CatalogReplicationClusterMasterSecret,
+            ':SecretString:password}}',
+          ],
+        ]
+
+  CatalogReplicationClusterParameterGroup:
+    Type: 'AWS::RDS::DBClusterParameterGroup'
+    Properties:
+      Family: aurora-postgresql13
+      Description: 'Property groups for catalog replication group'
+      Parameters:
+        rds.logical_replication: 1
+        rds.force_ssl: 1
+        wal_sender_timeout: 0
+        max_wal_senders: 40
+        max_replication_slots: 40
+  CatalogReplicationInstance1:
+    Stages:
+      - dev
+      - qa
+      - prod
+    Type: 'AWS::RDS::DBInstance'
+    Properties:
+      DBClusterIdentifier:
+        Ref: CatalogReplicationCluster
+      DBInstanceClass: ${self:custom.catalog-replication-instance-size}
+      DBParameterGroupName:
+        Ref: CatalogReplicationInstanceParameterGroup
+      Engine: aurora-postgresql
+      PubliclyAccessible: false
+      MonitoringInterval: 0
+  CatalogReplicationInstance2:
+    Stages:
+      - qa
+      - prod
+    Type: 'AWS::RDS::DBInstance'
+    Properties:
+      DBClusterIdentifier:
+        Ref: CatalogReplicationCluster
+      DBInstanceClass: ${self:custom.catalog-replication-instance-size}
+      DBParameterGroupName:
+        Ref: CatalogReplicationInstanceParameterGroup
+      Engine: aurora-postgresql
+      EngineVersion: ${self:custom.pg-engine-version}
+      PubliclyAccessible: false
+  CatalogReplicationInstance3:
+    Stages:
+      - qa
+      - prod
+    Type: 'AWS::RDS::DBInstance'
+    Properties:
+      DBClusterIdentifier:
+        Ref: CatalogReplicationCluster
+      DBInstanceClass: ${self:custom.catalog-replication-instance-size}
+      DBParameterGroupName:
+        Ref: CatalogReplicationInstanceParameterGroup
+      Engine: aurora-postgresql
+      EngineVersion: ${self:custom.pg-engine-version}
+      PubliclyAccessible: false
+  CatalogReplicationInstanceParameterGroup:
+    Type: AWS::RDS::DBParameterGroup
+    Properties:
+      Description: DB Parameter Group for Catalog Replication DB
+      Family: aurora-postgresql13
+      Parameters:
+        shared_preload_libraries: auto_explain,pg_stat_statements,pg_hint_plan,pgaudit,pglogical
+        log_statement: 'ddl'
+        log_connections: 1
+        log_disconnections: 1
+        log_lock_waits: 1
+        log_min_duration_statement: 5000
+        auto_explain.log_min_duration: 5000
+        auto_explain.log_verbose: 1
+        log_rotation_age: 1440
+        log_rotation_size: 102400
+        rds.log_retention_period: 10080
+        random_page_cost: 1
+        track_activity_query_size: 16384
+        idle_in_transaction_session_timeout: 7200000
+        statement_timeout: 7200000
+        search_path: '"$user",public'
+  CatalogReplicationDBSubnetGroup:
+    Type: 'AWS::RDS::DBSubnetGroup'
+    Properties:
+      DBSubnetGroupDescription: 'catalog-db-${self:provider.stage}-subnet-group'
+      SubnetIds:
+        - ${self:custom.private-subnet-1}
+        - ${self:custom.private-subnet-2}
+  CatalogReplicationClusterMasterSecret:
+    Type: AWS::SecretsManager::Secret
+    Properties:
+      Name: catalog-replication-cluster-master-password
+      Description: Catalog replication cluster master user secret
+      GenerateSecretString:
+        SecretStringTemplate:
+          Fn::Join:
+            - ''
+            - - '{"username": "'
+              - 'catalogServiceUser'
+              - '"}'
+        GenerateStringKey: 'password'
+        ExcludeCharacters: '"@/\: ;+%'
+        PasswordLength: 16
+  CatalogSecretReplicationClusterAttachment:
+    Type: AWS::SecretsManager::SecretTargetAttachment
+    Properties:
+      SecretId:
+        Ref: CatalogReplicationClusterMasterSecret
+      TargetId:
+        Ref: CatalogReplicationCluster
+      TargetType: AWS::RDS::DBCluster
+
+Outputs:
+  CatalogReplicationClusterMasterSecretArn:
+    Description: Catalog replication cluster secret parameter arn
+    Value: !Ref CatalogReplicationClusterMasterSecret
+    Export:
+      Name: '#{AWS::StackName}-CatalogReplicationClusterMasterSecretArn'
+  CatalogReplicationClusterSecretName:
+    Description: Catalog replication cluster secret name
+    Value: 'catalog-replication-cluster-master-password'
+    Export:
+      Name: '#{AWS::StackName}-CatalogReplicationClusterSecretName'

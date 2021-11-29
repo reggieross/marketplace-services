@@ -1,0 +1,259 @@
+version: 2.1
+defaults: &defaults
+  working_directory: ~/repo
+  executor:
+    name: node/default
+
+orbs:
+  node: circleci/node@3.0.0
+  aws-cli: circleci/aws-cli@1.4.0
+
+jobs:
+  check_changes:
+    <<: *defaults
+    steps:
+      - checkout
+      - run: cat > ~/repo/ci/new-env-vars
+      - run: ~/repo/ci/check_for_changes.sh
+      - run: cat ~/repo/ci/new-env-vars >> $BASH_ENV
+      - persist_to_workspace:
+          root: ~/repo
+          paths:
+           - ./cf
+           - ./ci
+           - ./serverless.yml
+           - ./package.json
+           - ./package-lock.json
+
+  install_module_deps:
+    <<: *defaults
+    parameters:
+      module:
+        type: string
+    steps:
+      - checkout
+      - attach_workspace:
+          at: ~/repo
+      - node/install-npm
+      - run: cd ./<< parameters.module >> && npm install
+      - persist_to_workspace:
+          root: ~/repo
+          paths: ./<< parameters.module >>/node_modules
+
+  build:
+    parameters:
+      module:
+        type: string
+      createZip:
+        type: boolean
+        default: false
+    environment:
+      SCRIPT_ROOT: ./ci/<< parameters.module >>/build.sh
+    <<: *defaults
+    steps:
+      - checkout
+      - attach_workspace:
+          at: ~/repo
+      - run: cat ~/repo/ci/new-env-vars >> $BASH_ENV
+      - run: mkdir ~/repo/<< parameters.module >>/build
+      - run: $SCRIPT_ROOT
+      - when:
+          condition: << parameters.createZip >>
+          steps:
+            - run: mkdir  ./<< parameters.module >>/artifacts
+            - run: zip -r ./<< parameters.module >>/artifacts/<< parameters.module >>.zip  ./<< parameters.module >>/build
+            - store_artifacts:
+                path: ./<< parameters.module >>/artifacts/<< parameters.module >>.zip
+      - persist_to_workspace:
+          root: ~/repo
+          paths:
+            - ./<< parameters.module >>/build
+            - ./<< parameters.module >>/artifacts
+            - ./<< parameters.module >>/serverless.yml
+            - ./<< parameters.module >>/cf
+
+  unit-test:
+    parameters:
+      module:
+        type: string
+    environment:
+      SCRIPT_ROOT: ./ci/<< parameters.module >>/unit-test.sh
+    <<: *defaults
+    steps:
+      - checkout
+      - attach_workspace:
+          at: ~/repo
+      - run: cat ~/repo/ci/new-env-vars >> $BASH_ENV
+      - run: $SCRIPT_ROOT
+
+  integration-test:
+    parameters:
+      module:
+        type: string
+    environment:
+      SCRIPT_ROOT: ./ci/<< parameters.module >>/integration-test.sh
+    <<: *defaults
+    steps:
+      - checkout
+      - attach_workspace:
+          at: ~/repo
+      - run: cat ~/repo/ci/new-env-vars >> $BASH_ENV
+      - run: $SCRIPT_ROOT
+
+  deploy:
+    executor: aws-cli/default
+    parameters:
+      stage:
+        default: dev
+        type: string
+      module:
+        type: string
+        default: ''
+    <<: *defaults
+    steps:
+      - attach_workspace:
+          at: ~/repo
+      - run: cat ~/repo/ci/new-env-vars >> $BASH_ENV
+      - aws-cli/setup:
+          aws-secret-access-key: AWS_SECRET_ACCESS_KEY
+          aws-access-key-id: AWS_ACCESS_KEY_ID
+          aws-region: AWS_REGION
+      - run: npm i
+      - run: aws configure set region $AWS_DEFAULT_REGION --profile deployment
+      - run: aws configure set profile.deployment.role_arn "$AWS_DEPLOYMENT_ARN"
+      - run: aws configure set profile.deployment.source_profile default
+      - when:
+          condition: << parameters.module >>
+          steps:
+            - run: npx serverless deploy --config ./<< parameters.module >>/serverless.yml --stage << parameters.stage >> --aws-profile deployment
+
+      - when:
+          condition:
+            not: << parameters.module >>
+          steps:
+            - run: npx serverless deploy --stage << parameters.stage >> --aws-profile deployment
+
+  post-deploy:
+    executor: aws-cli/default
+    parameters:
+      stage:
+        default: dev
+        type: string
+      module:
+        type: string
+        default: ''
+    <<: *defaults
+    steps:
+      - attach_workspace:
+          at: ~/repo
+      - run: cat ~/repo/ci/new-env-vars >> $BASH_ENV
+      - aws-cli/setup:
+          aws-secret-access-key: AWS_SECRET_ACCESS_KEY
+          aws-access-key-id: AWS_ACCESS_KEY_ID
+          aws-region: AWS_REGION
+      - run: npm i
+      - run: aws configure set region $AWS_DEFAULT_REGION --profile deployment
+      - run: aws configure set profile.deployment.role_arn "$AWS_DEPLOYMENT_ARN"
+      - run: aws configure set profile.deployment.source_profile default
+      - run: aws configure set profile.deployment.source_profile default
+      - ./ci/run_codebuild_pipeline.sh marketplace-services-migration-pipeline << pipeline.git.revision >>
+
+  version: 2
+  build_test_deploy:
+    jobs:
+      - check_changes
+
+      # Catalog GQL
+      - install_module_deps:
+          name: "Install: Catalog GQL"
+          module: catalog-gql
+          requires:
+            - check_changes
+      - unit-test:
+          name: "Test: Catalog GQL UNIT"
+          module: catalog-gql
+          requires:
+            -  "Install: Catalog GQL"
+      - integration-test:
+          name: "Test: Catalog GQL Integration"
+          module: catalog-gql
+          requires:
+            -  "Install: Catalog GQL"
+      - build:
+          name: "Build: Catalog GQL"
+          module: catalog-gql
+          createZip: true
+          requires:
+            - "Test: Catalog GQL UNIT"
+            - "Test: Catalog GQL Integration"
+
+      # Service 2
+
+
+
+     #Env Deploys
+     #Shared
+      - deploy:
+          stage: dev
+          name: "Deploy: Shared - dev"
+          context: org_ui
+          filters:
+            branches:
+              only:
+                - develop
+          requires:
+            - check_changes
+      - deploy:
+          stage: prod
+          name: "Deploy: Shared - prod"
+          context: org_ui
+          filters:
+            branches:
+              only:
+                - master
+          requires:
+            - check_changes
+      - deploy:
+          stage: qa
+          name: "Deploy: Shared - qa"
+          context: org_ui
+          filters:
+            branches:
+              only:
+                - release/*
+          requires:
+            - check_changes
+      #Catalog GQL
+      - deploy:
+          stage: dev
+          name: "Deploy: Catalog GQL - dev"
+          module: catalog-gql
+          context: org_ui
+          filters:
+            branches:
+              only:
+                - develop
+          requires:
+            - "Build: Catalog GQL"
+      - deploy:
+          stage: prod
+          name: "Deploy: Catalog GQL - prod"
+          module: catalog-gql
+          context: org_ui
+          filters:
+            branches:
+              only:
+                - master
+          requires:
+            - "Build: Catalog GQL"
+      - deploy:
+          stage: qa
+          name: "Deploy: Catalog GQL - qa"
+          module: catalog-gql
+          context: org_ui
+          filters:
+            branches:
+              only:
+                - release/*
+          requires:
+            - "Build: Catalog GQL"

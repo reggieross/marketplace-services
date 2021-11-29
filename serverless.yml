@@ -1,0 +1,59 @@
+service: marketplace-services
+
+plugins:
+  - serverless-pseudo-parameters
+  - serverless-cloudformation-sub-variables
+  - serverless-prune-plugin
+  - serverless-offline-conditional-resources
+
+custom:
+  # Network Stack
+  network-stack-name: infra-networking-${self:provider.stage}
+
+  # Network Stack Imports
+  public-subnet-1:
+    Fn::ImportValue: ${self:custom.network-stack-name}-DefaultPublicSubnet1
+  public-subnet-2:
+    Fn::ImportValue: ${self:custom.network-stack-name}-DefaultPublicSubnet2
+  private-subnet-1:
+    Fn::ImportValue: ${self:custom.network-stack-name}-DefaultPrivateSubnet1
+  private-subnet-2:
+    Fn::ImportValue: ${self:custom.network-stack-name}-DefaultPrivateSubnet2
+  vpc-id:
+    Fn::ImportValue: ${self:custom.network-stack-name}-DefaultVPC
+
+  catalog-replication-instance-size-config:
+    dev: 'db.t3.medium'
+    qa: ''
+    prod: ''
+  catalog-replication-instance-size: ${self:custom.catalog-replication-instance-size-config.${self:provider.stage}}
+  pg-engine-version: 13.3
+  codebuild:
+    url: https://github.com/reggieross/marketplace-services.git
+    source-version:
+      sandbox: sandbox
+      dev: develop
+      qa: release/.*
+      prod: master
+
+
+package:
+  individually: true
+
+provider:
+  name: aws
+  region: us-east-1
+  stage: ${opt:stage, 'dev'}
+  environment:
+    REGION: ${self:provider.region}
+    ENVIRONMENT: ${self:provider.stage}
+    STAGE: ${self:provider.stage}
+  stackTags:
+    Environment: ${self:provider.stage}
+    Project: marketplace
+    ServiceName: ${self:service}
+
+resources:
+  - ${file(./cf/rds.yml)}
+  - ${file(./cf/security-groups.yml)}
+  - ${file(./cf/codebuild.yml)}

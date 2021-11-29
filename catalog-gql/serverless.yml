@@ -1,0 +1,67 @@
+service: catalog-gql
+
+plugins:
+  - serverless-pseudo-parameters
+  - serverless-cloudformation-sub-variables
+  - serverless-prune-plugin
+  - serverless-offline-conditional-resources
+
+
+custom:
+  shared-infra: marketplace-services-${self:provider.stage}
+
+  # Network Stack
+  network-stack-name: infra-networking-${self:provider.stage}
+
+  # Network Stack Imports
+  public-subnet-1:
+    Fn::ImportValue: ${self:custom.network-stack-name}-DefaultPublicSubnet1
+  public-subnet-2:
+    Fn::ImportValue: ${self:custom.network-stack-name}-DefaultPublicSubnet2
+  vpc-id:
+    Fn::ImportValue: ${self:custom.network-stack-name}-DefaultVPC
+
+  db-access-security-grooup: ${cf:${self:custom.shared-infra}.ReplicationDBAccessSecurityGroup}
+  db-secret-name: ${cf:${self:custom.shared-infra}.CatalogReplicationClusterSecretName}
+  db-secrets: ${ssm:/aws/reference/secretsmanager/${self:custom.db-secret-name}~true}
+
+package:
+  individually: true
+
+provider:
+  name: aws
+  region: us-east-1
+  stage: ${opt:stage, 'dev'}
+  environment:
+    REGION: ${self:provider.region}
+    ENVIRONMENT: ${self:provider.stage}
+    STAGE: ${self:provider.stage}
+  stackTags:
+    Environment: ${self:provider.stage}
+    Project: catalog-gql
+    ServiceName: ${self:service}
+  vpc:
+    subnetIds:
+      - ${self:custom.public-subnet-1}
+      - ${self:custom.public-subnet-2}
+    securityGroupIds:
+      - ${self:custom.db-access-security-grooup}
+
+functions:
+  catalog-gql:
+    handler: ./catalog-gql/build/lambda.handler
+    memorySize: 4096
+    environment:
+      ENVIRONMENT: ${self:provider.stage}
+      POSTGRES_DATABASE_PW: ${self:custom.db-secrets.password, ''}
+      POSTGRES_DATABASE_USER: ${self:custom.db-secrets.username, ''}
+      POSTGRES_DATABASE_HOST: ${self:custom.db-secrets.host, ''}
+      AUTHENTICATION_HOST: ""
+    package:
+      artifact: catalog-gql/artifacts/catalog-gql.zip
+    events:
+      - http:
+          method: any
+          path: /{any+}
+
+

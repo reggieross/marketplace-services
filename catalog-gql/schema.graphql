@@ -1,0 +1,80 @@
+enum Role {
+  ADMIN
+  USER
+  SERVICE
+  UNKNOWN
+}
+
+enum LIMIT {
+  FIFTY
+  ONE_HUNDRED
+  FIVE_HUNDRED
+}
+
+directive @auth(requires: Role = ADMIN) on OBJECT | FIELD_DEFINITION
+
+type Query {
+  catalog: ProductResponse!
+}
+
+type Mutation {
+  catalog: CatalogMutationResponse!
+}
+
+type CatalogMutationResponse {
+  likeProduct(input: LikeProductInput): LikeProductResponse
+}
+
+type ProductResponse {
+  products(input: ProductsInput): [Product!]!
+  filters: ProductFilters!
+}
+
+type ProductFilters {
+  total: Int
+  brand: [Brand!]!
+}
+
+type Product {
+  id: String
+  name: String
+  Brand: [Brand!]!
+  Price: [Price!]!
+}
+
+type Brand {
+  id: String
+  name: String
+  product: [Product!]!
+}
+
+type Price {
+  amount: String
+  url: String
+  site: String
+  currency: String
+}
+
+type LikeProductResponse {
+  success: Boolean
+}
+
+# INPUTS
+input ProductsInput {
+  pageInfo: PaginationInput
+  filters: ProductFiltersInput
+}
+
+input PaginationInput {
+  limit: LIMIT!
+  page: Int!
+}
+
+input ProductFiltersInput {
+  brandIds: [String!]
+}
+
+input LikeProductInput {
+  productId: String!
+  liked: Boolean!
+}
