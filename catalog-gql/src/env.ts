@@ -7,6 +7,6 @@ export const ENV = {
   POSTGRES_DATABASE_USER: process.env.POSTGRES_DATABASE_USER || '',
   POSTGRES_DATABASE_PW: process.env.POSTGRES_DATABASE_PW || '',
   POSTGRES_DATABASE_HOST: process.env.POSTGRES_DATABASE_HOST || '',
-  DB_NAME: 'catalog',
+  DB_NAME: 'MarketplaceCatalog',
   AUTHENTICATION_HOST: process.env.AUTHENTICATION_HOST,
 };

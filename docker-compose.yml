@@ -5,7 +5,7 @@ services:
     environment:
       POSTGRES_PASSWORD: passw0rd
       POSTGRES_USER: integration-test-user
-      POSTGRES_DB: catalog
+      POSTGRES_DB: MarketplaceCatalog
     ports:
       - '5432:5432'
     networks:
