@@ -159,7 +159,7 @@ jobs:
       - run: aws configure set region $AWS_DEFAULT_REGION --profile deployment
       - run: aws configure set profile.deployment.role_arn "$AWS_DEPLOYMENT_ARN"
       - run: aws configure set profile.deployment.source_profile default
-      - run: ./ci/run_codebuild_pipeline.sh marketplace-services-migration-pipeline-<< parameters.stage >> << pipeline.git.revision >>
+      - run: ./ci/run_codebuild_pipeline.sh marketplace-services-migration-pipeline-<< parameters.stage >> $CIRCLE_SHA1
 
 workflows:
   version: 2

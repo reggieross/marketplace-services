@@ -8,7 +8,7 @@
     "build": "tsc && npm run generate",
     "start": "nodemon",
     "test:unit": "jest --config=jest.unit.config.json --passWithNoTests --forceExit --ci --coverage",
-    "migrate": "knex migrate:latest --knexfile ./knexfile.js"
+    "migrate": "npx knex migrate:latest --knexfile ./knexfile.js"
   },
   "keywords": [],
   "author": "",
@@ -50,10 +50,11 @@
     "graphql": "^15.7.2",
     "husky": "^4.2.3",
     "jest": "^27.0.6",
+    "knex": "^0.95.14",
     "lodash": "^4.17.21",
     "pg-promise": "^10.11.1",
     "ts-jest": "^25.2.1",
-    "knex": "^0.95.14"
+    "typeorm": "^0.2.41"
   },
   "jest": {
     "roots": [

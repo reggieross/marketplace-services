@@ -1,5 +1,13 @@
 version: 0.2
+env:
+  variables:
+    DB_USERNAME: $DB_USERNAME
+    DB_PASSWORD: $DB_PASSWORD
+    DB_HOST: $DB_HOST
+    DB_NAME: $DB_NAME
 phases:
   build:
     commands:
+      - npm i
       - ./ci/migrate.sh
+
