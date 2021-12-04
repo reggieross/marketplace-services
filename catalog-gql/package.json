@@ -7,8 +7,12 @@
     "generate": "graphql-codegen",
     "build": "tsc && npm run generate",
     "start": "nodemon",
+    "beautify": "nodemon",
     "test:unit": "jest --config=jest.unit.config.json --passWithNoTests --forceExit --ci --coverage",
-    "migrate": "npx knex migrate:latest --knexfile ./knexfile.js"
+    "migrate": "npm run build && typeorm migration:run --config ormconfig",
+    "seed": "DB_NAME=MarketplaceCatalog DB_USERNAME=integration-test-user DB_PASSWORD=passw0rd DB_HOST=localhost knex seed:run --knexfile ./knexfile.js",
+    "migrate:local": "npm run build && typeorm migration:run --config ormconfig.local",
+    "migrate:generate": "npm run build && typeorm migration:generate --config ormconfig.local"
   },
   "keywords": [],
   "author": "",
@@ -50,7 +54,7 @@
     "graphql": "^15.7.2",
     "husky": "^4.2.3",
     "jest": "^27.0.6",
-    "knex": "^0.95.14",
+    "knex": "^0.95.15",
     "lodash": "^4.17.21",
     "pg-promise": "^10.11.1",
     "ts-jest": "^25.2.1",

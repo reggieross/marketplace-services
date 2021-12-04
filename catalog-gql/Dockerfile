@@ -39,7 +39,7 @@ COPY --from=build /app/schema.graphql ./
 COPY scripts ./scripts
 COPY ../migrations ./migrations_local
 COPY seeds ./seeds_local
-COPY knexfile.js ./
+COPY knexfile.local.js ./
 COPY jest.integration.config.json ./
 COPY jest.unit.config.json ./
 COPY schema.graphql ./

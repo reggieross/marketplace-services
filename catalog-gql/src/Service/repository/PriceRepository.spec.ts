@@ -5,12 +5,13 @@ describe('Price Repository', () => {
   it('Should return a list of all the prices for a product', async () => {
     const expectedRes = [
       {
-        amount: '120.00',
+        amount: 120.0,
         url: 'http://www.somesite.com',
         site: 'somesite',
         currency: 'USD',
       },
     ];
+
     const spy = jest.spyOn(PriceDao, 'list');
     spy.mockResolvedValue(expectedRes);
 

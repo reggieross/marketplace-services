@@ -1,5 +1,5 @@
-import {BrandDao} from "./dao/BrandDao";
-import {BrandRepository} from "./BrandRepository";
+import { BrandDao } from './dao/BrandDao';
+import { BrandRepository } from './BrandRepository';
 
 describe('Brand Repo', () => {
   it('Should return brands', async () => {

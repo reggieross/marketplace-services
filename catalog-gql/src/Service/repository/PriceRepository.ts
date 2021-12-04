@@ -1,8 +1,9 @@
-import { Price, Repository } from '../../types';
+import { Repository } from '../../types';
 import { PriceDao } from './dao/PriceDao';
+import { TPrice } from '../../models/Price';
 
 export interface PriceRepository extends Repository {
-  getPriceForProduct: (productId: string) => Promise<Price[]>;
+  getPriceForProduct: (productId: string) => Promise<TPrice[]>;
 }
 
 const getPriceForBrand = async (productId: string) => {

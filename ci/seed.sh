@@ -10,7 +10,7 @@ do
 
   APP_PATH="./$APP"
   cd "$APP_PATH" || exit
-  RUN_MIGRATION="DB_NAME=$DB_NAME APP_NAME=$APP DB_USERNAME=integration-test-user DB_PASSWORD=passw0rd DB_HOST=localhost knex seed:run --knexfile ./knexfile.js"
+  RUN_MIGRATION="DB_NAME=$DB_NAME APP_NAME=$APP DB_USERNAME=integration-test-user DB_PASSWORD=passw0rd DB_HOST=localhost knex seed:run --knexfile ./knexfile.local.js"
   eval "$RUN_MIGRATION";
 done
 

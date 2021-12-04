@@ -1,5 +1,5 @@
 import { TableConfig } from './config/TableConfig';
-import {TFilters} from "./SQLGenerator";
+import { TFilters } from './SQLGenerator';
 
 export const createWhere = async (
   table: keyof TableConfig,
@@ -30,10 +30,7 @@ const transformFilters = (
   }, []);
 };
 
-const transformFilter = (
-  table: string,
-  property: keyof TFilters
-): string => {
+const transformFilter = (table: string, property: keyof TFilters): string => {
   switch (property) {
     case 'brandIds':
       return getStringValueForStringFilter(table, property, 'brand_id');

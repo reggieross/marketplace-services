@@ -1,9 +1,9 @@
-import { Brand, Repository } from '../../types';
-import {BrandDao} from "./dao/BrandDao";
-
+import { Repository } from '../../types';
+import { BrandDao } from './dao/BrandDao';
+import { TBrand } from '../../models/Brand';
 
 export interface BrandRepository extends Repository {
-  getBrands: () => Promise<Brand[]>;
+  getBrands: () => Promise<TBrand[]>;
 }
 
 const getBrands = async () => {

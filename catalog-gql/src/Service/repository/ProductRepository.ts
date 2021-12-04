@@ -1,9 +1,10 @@
-import { Product, Repository } from "../../types";
-import { ProductDao } from "./dao/ProductDao";
-import {ProductsInput} from "../../GraphQL/generated/resolvers";
+import { Repository } from '../../types';
+import { ProductDao } from './dao/ProductDao';
+import { ProductsInput } from '../../GraphQL/generated/resolvers';
+import { TProduct } from '../../models/Product';
 
 export interface ProductRepository extends Repository {
-  getProductsForUser: (where: ProductsInput) => Promise<Product[]>;
+  getProductsForUser: (where: ProductsInput) => Promise<TProduct[]>;
 }
 
 const getProductsForUser = async (where: ProductsInput) => {
@@ -11,5 +12,5 @@ const getProductsForUser = async (where: ProductsInput) => {
 };
 
 export const ProductRepository: ProductRepository = {
-  getProductsForUser
+  getProductsForUser,
 };

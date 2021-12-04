@@ -1,7 +1,7 @@
 import { ProductDao } from './repository/dao/ProductDao';
-import { CatalogService } from './CatalogService';
 import { BrandDao } from './repository/dao/BrandDao';
 import { PriceDao } from './repository/dao/PriceDao';
+import { CatalogService } from './CatalogService';
 
 describe('Catalog Service', () => {
   const service = new CatalogService({});
@@ -41,7 +41,7 @@ describe('Catalog Service', () => {
   it('Should get prices for a specific product', async () => {
     const expectedRes = [
       {
-        amount: '120.00',
+        amount: 120.0,
         url: 'http://www.somesite.com',
         site: 'somesite',
         currency: 'USD',

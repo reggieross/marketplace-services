@@ -2,7 +2,7 @@ Resources:
   CatalogReplicationDBAccessSecurityGroup:
     Type: AWS::EC2::SecurityGroup
     Properties:
-      GroupDescription: Replicate SG Connect to RDS instance
+      GroupDescription: Security group for the application that needs access to the catalog replication cluster
       GroupName: CatalogReplicationDBAccessSecurityGroup
       VpcId: ${self:custom.vpc-id}
       SecurityGroupEgress:
@@ -17,7 +17,7 @@ Resources:
   CatalogReplicationDBSecurityGroup:
     Type: AWS::EC2::SecurityGroup
     Properties:
-      GroupDescription: Replicate Server to Connect to RDS instance
+      GroupDescription: Security group for db
       GroupName: CatalogReplicationDBSecurityGroup
       SecurityGroupIngress:
         # Incoming traffic from Replicate Security Group
@@ -48,7 +48,7 @@ Resources:
 
 Outputs:
   CatalogReplicationDBSecurityGroup:
-    Description: Security group for catalog replication cluster
+    Description: Security group for db
     Value: !Ref CatalogReplicationDBSecurityGroup
     Export:
       Name: '#{AWS::StackName}-CatalogReplicationDBSecurityGroup'

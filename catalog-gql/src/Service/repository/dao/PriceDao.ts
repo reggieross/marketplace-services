@@ -1,7 +1,8 @@
-import {getDB} from './db';
-import {Dao, Price} from '../../../types';
-import {SQLGenerator, TFilters} from './SQLGenerator/SQLGenerator';
-import {TableName} from "./SQLGenerator/config/TableConfig";
+import { getDB } from './db';
+import { Dao } from '../../../types';
+import { SQLGenerator, TFilters } from './SQLGenerator/SQLGenerator';
+import { TableName } from './SQLGenerator/config/TableConfig';
+import { TPrice } from '../../../models/Price';
 
 interface PriceEntity {
   id: string;
@@ -11,22 +12,20 @@ interface PriceEntity {
   amount: string;
 }
 
-const list = async (where: { filters: TFilters }): Promise<Price[]> => {
+const list = async (where: { filters: TFilters }): Promise<TPrice[]> => {
   const { query, queryInput } = await SQLGenerator.genSQL(
     TableName.PRICE,
     ['id', 'amount', 'currency', 'site', 'product_id'],
     where.filters
   );
-  console.log(query);
-  console.log(where);
   const rows: PriceEntity[] = await getDB().any(query, queryInput);
   return transform(rows);
 };
 
-const transform = (entities: PriceEntity[]): Price[] => {
-  return entities.map<Price>(entity => {
+const transform = (entities: PriceEntity[]): TPrice[] => {
+  return entities.map<TPrice>((entity) => {
     return {
-      amount: entity.amount,
+      amount: parseFloat(entity.amount),
       url: entity.site,
       site: entity.site,
       currency: entity.currency,
@@ -34,6 +33,6 @@ const transform = (entities: PriceEntity[]): Price[] => {
   });
 };
 
-export const PriceDao: Dao<Price, { filters: TFilters }> = {
+export const PriceDao: Dao<TPrice, { filters: TFilters }> = {
   list,
 };

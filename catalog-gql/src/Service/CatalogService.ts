@@ -1,8 +1,10 @@
 import { ProductRepository } from './repository/ProductRepository';
-import { Brand, Price, Product } from '../types';
 import { ProductsInput } from '../GraphQL/generated/resolvers';
 import { BrandRepository } from './repository/BrandRepository';
 import { PriceRepository } from './repository/PriceRepository';
+import { TProduct } from '../models/Product';
+import { TBrand } from '../models/Brand';
+import { TPrice } from '../models/Price';
 
 export interface CatalogService {}
 
@@ -16,16 +18,16 @@ export class CatalogService {
     this.priceRepoo = PriceRepository;
   }
 
-  getProductsForUser = (where: ProductsInput): Promise<Product[]> => {
+  getProductsForUser = (where: ProductsInput): Promise<TProduct[]> => {
     console.info(where);
     return this.productRepo.getProductsForUser(where);
   };
 
-  getBrands = (): Promise<Brand[]> => {
+  getBrands = (): Promise<TBrand[]> => {
     return this.brandRepo.getBrands();
   };
 
-  getPricesForProduct = (productId: string | number): Promise<Price[]> => {
+  getPricesForProduct = (productId: string | number): Promise<TPrice[]> => {
     return this.priceRepoo.getPriceForProduct(`${productId}`);
   };
 }

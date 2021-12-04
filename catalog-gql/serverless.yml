@@ -7,7 +7,6 @@ plugins:
   - serverless-offline-conditional-resources
   - serverless-plugin-ifelse
 
-
 custom:
   shared-infra: marketplace-services-${self:provider.stage}
 
@@ -60,12 +59,10 @@ functions:
       POSTGRES_DATABASE_PW: ${self:custom.db-secrets.password, ''}
       POSTGRES_DATABASE_USER: ${self:custom.db-secrets.username, ''}
       POSTGRES_DATABASE_HOST: ${self:custom.db-secrets.host, ''}
-      AUTHENTICATION_HOST: ""
+      AUTHENTICATION_HOST: ''
     package:
       artifact: catalog-gql/artifacts/catalog-gql.zip
     events:
       - http:
           method: any
           path: /{any+}
-
-

@@ -1,8 +1,9 @@
-import {getDB} from './db';
-import {Dao, Product} from '../../../types';
-import {SQLGenerator} from './SQLGenerator/SQLGenerator';
-import {ProductsInput,} from '../../../GraphQL/generated/resolvers';
-import {TableName} from "./SQLGenerator/config/TableConfig";
+import { getDB } from './db';
+import { Dao } from '../../../types';
+import { SQLGenerator } from './SQLGenerator/SQLGenerator';
+import { ProductsInput } from '../../../GraphQL/generated/resolvers';
+import { TableName } from './SQLGenerator/config/TableConfig';
+import { TProduct } from '../../../models/Product';
 
 interface ProductEntity {
   id: string;
@@ -11,7 +12,7 @@ interface ProductEntity {
   name: string;
 }
 
-const list = async (where: ProductsInput): Promise<Product[]> => {
+const list = async (where: ProductsInput): Promise<TProduct[]> => {
   const { query, queryInput } = await SQLGenerator.genSQL(
     TableName.PRODUCT,
     ['id', 'brandId', 'name'],
@@ -20,12 +21,11 @@ const list = async (where: ProductsInput): Promise<Product[]> => {
   );
   const rows: ProductEntity[] = await getDB().any(query, queryInput);
 
-  console.info(rows);
   return transform(rows);
 };
 
-const transform = (entities: ProductEntity[]): Product[] => {
-  return entities.map<Product>(entity => {
+const transform = (entities: ProductEntity[]): TProduct[] => {
+  return entities.map<TProduct>((entity) => {
     return {
       id: entity.id,
       name: entity.name,
@@ -34,6 +34,6 @@ const transform = (entities: ProductEntity[]): Product[] => {
   });
 };
 
-export const ProductDao: Dao<Product, ProductsInput> = {
+export const ProductDao: Dao<TProduct, ProductsInput> = {
   list,
 };

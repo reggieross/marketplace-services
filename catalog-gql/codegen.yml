@@ -9,9 +9,9 @@ generates:
       federation: true
       mapperTypeSuffix: Model
       mappers:
-        Product: ../../types#Product
-        Brand: ../../types#Brand
-        Price: ../../types#Price
+        Product: ../../models/Product#TProduct
+        Brand: ../../models/Brand#TBrand
+        Price: ../../models/Price#TPrice
     plugins:
       - typescript
       - typescript-resolvers

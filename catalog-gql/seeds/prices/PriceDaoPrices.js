@@ -1,10 +1,10 @@
 module.exports = [
   {
-    amount: "10.99",
-    currency: "usd",
-    currency: "usd",
+    amount: '10.99',
+    currency: 'usd',
+    currency: 'usd',
   },
   {
-    name: "Some name 2"
-  }
+    name: 'Some name 2',
+  },
 ];

@@ -9,5 +9,5 @@ phases:
   build:
     commands:
       - npm i
-      - ./ci/migrate.sh
+      - npm run migrate
 

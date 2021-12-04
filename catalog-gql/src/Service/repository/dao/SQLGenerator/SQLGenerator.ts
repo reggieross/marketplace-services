@@ -1,4 +1,4 @@
-import {Table, TableConfig, TableName, Tables} from './config/TableConfig';
+import { Table, TableConfig, TableName, Tables } from './config/TableConfig';
 import { createWhere } from './CreateWhereClause';
 import { createSelect } from './CreateSelectClause';
 import {

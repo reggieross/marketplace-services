@@ -1,6 +1,6 @@
-import {SQLGenerator} from './SQLGenerator';
-import {Limit} from '../../../../GraphQL/generated/resolvers';
-import {TableName} from "./config/TableConfig";
+import { SQLGenerator } from './SQLGenerator';
+import { Limit } from '../../../../GraphQL/generated/resolvers';
+import { TableName } from './config/TableConfig';
 
 describe('SQL Generator', () => {
   it('generate basic select statement for table', async () => {
@@ -29,7 +29,7 @@ describe('SQL Generator', () => {
 
   it('should generate where and correct page for filters', async () => {
     const { query, queryInput } = await SQLGenerator.genSQL(
-        TableName.PRODUCT,
+      TableName.PRODUCT,
       ['name'],
       {
         brandIds: ['some-brand'],

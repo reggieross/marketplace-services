@@ -266,37 +266,37 @@ workflows:
             - "Deploy: Shared - qa"
 
       #Post Deploy
-      - post_deploy:
-          stage: dev
-          name: "Post Deploy: dev"
-          context: org_ui
-          filters:
-            branches:
-              only:
-                - develop
-          requires:
-            - "Deploy: Catalog GQL - dev"
-            - "Deploy: Shared - dev"
-      - post_deploy:
-          stage: prod
-          name: "Post Deploy: prod"
-          context: org_ui
-          filters:
-            branches:
-              only:
-                - master
-          requires:
-            - "Deploy: Catalog GQL - prod"
-            - "Deploy: Shared - prod"
-      - post_deploy:
-          stage: qa
-          name: "Post Deploy: qa"
-          module: catalog-gql
-          context: org_ui
-          filters:
-            branches:
-              only:
-                - release/*
-          requires:
-            - "Deploy: Catalog GQL - qa"
-            - "Deploy: Shared - qa"
+#      - post_deploy:
+#          stage: dev
+#          name: "Post Deploy: dev"
+#          context: org_ui
+#          filters:
+#            branches:
+#              only:
+#                - develop
+#          requires:
+#            - "Deploy: Catalog GQL - dev"
+#            - "Deploy: Shared - dev"
+#      - post_deploy:
+#          stage: prod
+#          name: "Post Deploy: prod"
+#          context: org_ui
+#          filters:
+#            branches:
+#              only:
+#                - master
+#          requires:
+#            - "Deploy: Catalog GQL - prod"
+#            - "Deploy: Shared - prod"
+#      - post_deploy:
+#          stage: qa
+#          name: "Post Deploy: qa"
+#          module: catalog-gql
+#          context: org_ui
+#          filters:
+#            branches:
+#              only:
+#                - release/*
+#          requires:
+#            - "Deploy: Catalog GQL - qa"
+#            - "Deploy: Shared - qa"

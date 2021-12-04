@@ -8,7 +8,7 @@ export const productDataLoader = (
   return new DataLoader(
     async (ids: string[]) => {
       const products = await catalogService.getProductsForUser({});
-      return ids.map(id => products[id] || null);
+      return ids.map((id) => products[id] || null);
     },
     {
       maxBatchSize: 1000,

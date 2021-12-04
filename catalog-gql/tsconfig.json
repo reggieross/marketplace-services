@@ -12,7 +12,9 @@
     "noUnusedLocals": false,
     "noUnusedParameters": false,
     "noEmitOnError": true,
-    "allowJs": true
+    "allowJs": true,
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true
   },
   "include": ["src/**/*"],
   "exclude": ["src/**/*.(spec|test).ts$"]

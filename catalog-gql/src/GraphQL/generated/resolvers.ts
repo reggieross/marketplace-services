@@ -1,9 +1,7 @@
 import { GraphQLResolveInfo } from 'graphql';
-import {
-  Product as ProductModel,
-  Brand as BrandModel,
-  Price as PriceModel,
-} from '../../types';
+import { TProduct as TProductModel } from '../../models/Product';
+import { TBrand as TBrandModel } from '../../models/Brand';
+import { TPrice as TPriceModel } from '../../models/Price';
 export type Maybe<T> = T | null;
 export type InputMaybe<T> = Maybe<T>;
 export type Exact<T extends { [key: string]: unknown }> = {
@@ -246,10 +244,10 @@ export type ResolversTypes = {
     Omit<ProductFilters, 'brand'> & { brand: Array<ResolversTypes['Brand']> }
   >;
   Int: ResolverTypeWrapper<Scalars['Int']>;
-  Product: ResolverTypeWrapper<ProductModel>;
+  Product: ResolverTypeWrapper<TProductModel>;
   String: ResolverTypeWrapper<Scalars['String']>;
-  Brand: ResolverTypeWrapper<BrandModel>;
-  Price: ResolverTypeWrapper<PriceModel>;
+  Brand: ResolverTypeWrapper<TBrandModel>;
+  Price: ResolverTypeWrapper<TPriceModel>;
   LikeProductResponse: ResolverTypeWrapper<LikeProductResponse>;
   Boolean: ResolverTypeWrapper<Scalars['Boolean']>;
   ProductsInput: ProductsInput;
@@ -271,10 +269,10 @@ export type ResolversParentTypes = {
     brand: Array<ResolversParentTypes['Brand']>;
   };
   Int: Scalars['Int'];
-  Product: ProductModel;
+  Product: TProductModel;
   String: Scalars['String'];
-  Brand: BrandModel;
-  Price: PriceModel;
+  Brand: TBrandModel;
+  Price: TPriceModel;
   LikeProductResponse: LikeProductResponse;
   Boolean: Scalars['Boolean'];
   ProductsInput: ProductsInput;
